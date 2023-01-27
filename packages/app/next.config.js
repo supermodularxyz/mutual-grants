@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    ethRPC: 'https://api.mycryptoapi.com/eth'
+    ethRPC: 'https://api.mycryptoapi.com/eth',
   }
 }
 

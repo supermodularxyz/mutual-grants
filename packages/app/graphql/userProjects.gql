@@ -1,0 +1,38 @@
+query MyRounds($address: String!) {
+  roundAccounts(where: {address: $address}) {
+    id
+    round {
+      id
+      program {
+        metaPtr {
+          pointer
+        }
+      }
+      roundMetaPtr {
+        pointer
+      }
+    }
+  }
+}
+
+query MyProjects($id: ID!) {
+  rounds(where: {id: $id}) {
+    id
+    projects {
+      id
+      metaPtr {
+        pointer
+      }
+      status
+      updatedAt
+    }
+    votingStrategy {
+      votes {
+        amount
+        projectId
+        from
+        token
+      }
+    }
+  }
+}
