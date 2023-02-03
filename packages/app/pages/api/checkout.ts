@@ -4,11 +4,12 @@ import * as postmark from "postmark"
 
 const client = new postmark.ServerClient(process.env.postmarkAPI as string)
 
-const craftMessage = (project: string, email: string, form: string): postmark.Message => {
+const craftMessage = (project: string, email: string, form: string, replyTo: string): postmark.Message => {
   return {
     To: email,
     // From: 'MutualGrants Invite <invite@mutualgrants.party>',
     From: 'MutualGrants Invite <hi@don3.xyz>',
+    ReplyTo: replyTo,
     Subject: `📩 MutualGrants invite for ${project} team`,
     HtmlBody: `<p>You have been invited to apply for a mutual grant. Click <a href="${form}">here</a> to get started.</p>`,
     MessageStream: "broadcast"
@@ -25,6 +26,7 @@ interface ExtendedNextAPIRequest extends NextApiRequest {
     projects: Projects[]
     form: string
     signer: `0x${string}`
+    replyTo: string
   }
 }
 
@@ -41,10 +43,10 @@ export default async function handler(
     return res.status(400)
   }
   
-  const { projects, form } = req.body
+  const { projects, form, replyTo } = req.body
 
   try {
-    await Promise.all(projects.map(({ name, teamEmail }) => client.sendEmail(craftMessage(name, teamEmail, form))))
+    await Promise.all(projects.map(({ name, teamEmail }) => client.sendEmail(craftMessage(name, teamEmail, form, replyTo))))
   
     // use Email API to send
     res.status(200).json({ message: 'Successful' })

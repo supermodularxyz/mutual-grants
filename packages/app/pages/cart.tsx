@@ -10,6 +10,7 @@ import { getAllStorageCart, removeFromStorageCart, clearStorageCart } from '../u
 
 const RoundCard = () => {
   const [cart, setCart] = useState<CartItem[]>([])
+  const [email, setEmail] = useState<string>("")
   const [form, setForm] = useState<string>("")
   const [ sending, setSending ] = useState<boolean>(false)
   const { address } = useAccount();
@@ -34,7 +35,7 @@ const RoundCard = () => {
     }))
 
     try {
-      await axios.post('/api/checkout', { projects, form, signer: address })
+      await axios.post('/api/checkout', { projects, form, signer: address, replyTo: email })
 
       toast.success("Invites successfully sent")
 
@@ -89,7 +90,22 @@ const RoundCard = () => {
           })}</div>
         </ul>
 
-        <div className='w-96 mt-8 text-left'>
+        <div className='w-96 mt-8 text-left mb-12'>
+          <div className='mb-4'>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Your Email Address
+            </label>
+            <div className="mt-1 border-b border-gray-300 focus-within:border-indigo-600">
+              <input
+                type="email"
+                name="email"
+                id="email"
+                className="block w-full border-0 border-b border-transparent bg-gray-50 focus:border-indigo-600 focus:ring-0 sm:text-sm"
+                placeholder="me@email.com"
+                onChange={(e) => setEmail(e.currentTarget.value)}
+              />
+            </div>
+          </div>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Google forms link
