@@ -4,9 +4,11 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import axios from 'axios';
+import papaparse from "papaparse"
 import { CartItem } from '../types/application'
 // import { AnswerBlock } from '../types/application'
 import { getAllStorageCart, removeFromStorageCart, clearStorageCart } from '../utils/storage';
+import { downloadBlob } from '../utils/utils';
 
 const RoundCard = () => {
   const [cart, setCart] = useState<CartItem[]>([])
@@ -51,6 +53,24 @@ const RoundCard = () => {
     updateCartList()
   }
 
+  const exportCSV = () => {
+    const cartData = cart.map((item) => {
+      const [chain, registry, projectId] = item.application.application.project.id.split(":")
+      return ({
+        title: item.application.application.project.title,
+        description: item.application.application.project.description,
+        project: `https://grantshub.gitcoin.co/#/chains/${chain}/registry/${registry}/projects/${projectId}`,
+        email: item.emailAnswer.answer
+    })})
+
+    const csvData = papaparse.unparse(cartData)
+
+    downloadBlob(csvData, "mutual-grants.csv", "text/csv;charset=utf-8;")
+
+    clearStorageCart()
+    updateCartList()
+  }
+
   useEffect(() => {
     updateCartList()
   }, [updateCartList])
@@ -90,7 +110,12 @@ const RoundCard = () => {
           })}</div>
         </ul>
 
-        <div className='w-96 mt-8 text-left mb-12'>
+        <div className='w-96 mt-8 mb-4 text-center'>
+          <button onClick={exportCSV}>Export as CSV</button>
+
+          <div className='w-full my-4 text-gray-400'>or</div>
+        </div>
+        <div className='w-96 mt-2 text-left mb-12'>
           <div className='mb-4'>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Your Email Address
